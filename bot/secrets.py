@@ -20,3 +20,6 @@ DISCORD_USER_ID = int(os.environ["DISCORD_USER_ID"])
 
 PRIVATE_GUILD = discord.Object(id=int(os.environ["PRIVATE_GUILD_ID"]))
 """Discord server that bot will be restricted to."""
+
+COMMAND_CHANNEL_ID = int(os.environ["COMMAND_CHANNEL_ID"])
+"""Channel ID for sending shell commands."""

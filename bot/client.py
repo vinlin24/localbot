@@ -9,7 +9,8 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Context
 
-from .secrets import PRIVATE_GUILD
+from .listener import shell_command_callback
+from .secrets import COMMAND_CHANNEL_ID, DISCORD_USER_ID, PRIVATE_GUILD
 
 
 class LocalBot(commands.Bot):
@@ -35,6 +36,21 @@ class LocalBot(commands.Bot):
     async def on_ready(self) -> None:
         """Event handler for when bot internal cache is ready."""
         print("Bot ready")
+
+    async def on_message(self, message: discord.Message, /) -> None:
+        # Ignore own messages and other bot messages, always
+        if message.author.bot:
+            return
+
+        # Check if it's in the dedicated command channel and sender is dev
+        if message.channel.id == COMMAND_CHANNEL_ID \
+                and message.author.id == DISCORD_USER_ID:
+            await shell_command_callback(message, self.loop)
+            # Treat everything in this channel as an input, not a command
+            return
+
+        # Required when overriding on_message to not silence commands
+        await self.process_commands(message)
 
 
 async def _load_bot_extensions(bot: LocalBot) -> None:
