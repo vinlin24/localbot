@@ -1,7 +1,5 @@
 <# Shortcut script for running the bot #>
 
-$START_IN = Join-Path $home "repos\localbot"
-
 # Assert that script is run with cwd at file's location
 if ((Get-Location).ToString() -ne $PSScriptRoot) {
     Write-Host "Script must be run from its directory, aborted." -ForegroundColor Red
