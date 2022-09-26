@@ -32,6 +32,6 @@ Running the bot:
 python3 -m bot
 ```
 or if you're on Windows:
-```
+```console
 .\run.ps1
 ```
