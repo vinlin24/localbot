@@ -12,12 +12,26 @@ A simple helper bot for you to use on your private server. Listens to you and on
 
 ## Environment Setup
 
-Repository setup:
+Repository setup (POSIX bash/zsh):
 ```console
 git clone https://github.com/vinlin24/localbot.git
 cd localbot
+python3 -m venv .venv
+source .venv/bin/activate
+pip3 install -r requirements.txt
 touch .env
 vim .env
+```
+
+Repository setup (Windows PowerShell):
+```console
+git clone https://github.com/vinlin24/localbot.git
+cd localbot
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+ni .env
+code .env
 ```
 
 The required environment variables are:
@@ -27,11 +41,11 @@ The required environment variables are:
 - `PRIVATE_GUILD_ID`: The ID of the private server you intend to use this bot in.
 - `COMMAND_CHANNEL_ID`: The ID of the text channel within your private server that you intend to send raw shell commands. I might remove this feature.
 
-Running the bot:
+Running the bot (POSIX bash/zsh):
 ```console
 python3 -m bot
 ```
-or if you're on Windows:
+Running the bot (Windows PowerShell):
 ```console
-.\run.ps1
+.\run.ps1  # which does "python -m bot"
 ```
