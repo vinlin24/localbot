@@ -3,12 +3,10 @@
 Defines the cat command.
 """
 
-from pathlib import Path
-
 from discord import File, Interaction, app_commands
 
-from ..client import CWD, LocalBot
-from ..utils import MESSAGE_LENGTH_LIMIT
+from ..client import LocalBot
+from ..utils import MESSAGE_LENGTH_LIMIT, escape_path, get_path, validate_path
 
 
 @app_commands.command(name="cat", description="Display file content")
@@ -17,21 +15,12 @@ from ..utils import MESSAGE_LENGTH_LIMIT
 @app_commands.rename(path_str="path")
 async def cat_command(interaction: Interaction, path_str: str, encoding: str = "utf-8") -> None:
     # Resolve path object based on absolute or relative path provided
-    path = Path(path_str.strip("\"'"))
-    if not path.is_absolute():
-        path = CWD.path / path
+    path = get_path(path_str)
 
     # Validate path
-    if not path.exists():
-        return await interaction.response.send_message(
-            f"**{path}** does not exist!",
-            ephemeral=True
-        )
-    if path.is_dir():
-        return await interaction.response.send_message(
-            f"**{path}** is a directory!",
-            ephemeral=True
-        )
+    valid = await validate_path(interaction, path, dir=False)
+    if not valid:
+        return  # validate_path already responded
 
     # Try to read content
     try:
@@ -39,7 +28,7 @@ async def cat_command(interaction: Interaction, path_str: str, encoding: str = "
             content = f.read()
     except Exception as error:
         return await interaction.response.send_message(
-            f"Could not read content from **{path}**:\n"
+            f"Could not read content from **{escape_path(path)}**:\n"
             f"```{type(error).__name__}: {error}```"
         )
 

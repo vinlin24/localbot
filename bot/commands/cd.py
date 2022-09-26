@@ -3,11 +3,10 @@
 Defines the cd command.
 """
 
-from pathlib import Path
-
 from discord import Interaction, app_commands
 
 from ..client import CWD, LocalBot
+from ..utils import escape_path, get_path, validate_path
 
 
 @app_commands.command(name="cd", description="Change the working directory")
@@ -15,25 +14,16 @@ from ..client import CWD, LocalBot
 @app_commands.rename(path_str="path")
 async def cd_command(interaction: Interaction, path_str: str) -> None:
     # Resolve path object based on absolute or relative path provided
-    path = Path(path_str.strip("\"'"))
-    if not path.is_absolute():
-        path = CWD.path / path
+    path = get_path(path_str)
 
     # Validate path
-    if not path.exists():
-        return await interaction.response.send_message(
-            f"**{path}** does not exist!",
-            ephemeral=True
-        )
-    if not path.is_dir():
-        return await interaction.response.send_message(
-            f"**{path}** is not a directory!",
-            ephemeral=True
-        )
+    valid = await validate_path(interaction, path, dir=True)
+    if not valid:
+        return  # validate_path already responded
 
     CWD.path = path.resolve()
     await interaction.response.send_message(
-        f"Changed working directory to **{CWD.path}**."
+        f"Changed working directory to **{escape_path(CWD.path)}**."
     )
 
 
