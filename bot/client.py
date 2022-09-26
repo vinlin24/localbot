@@ -3,7 +3,7 @@
 Defines the bot class to use in this program.
 """
 
-import os
+from pathlib import Path
 
 import discord
 from discord.ext import commands
@@ -11,6 +11,17 @@ from discord.ext.commands import Context
 
 from .listener import shell_command_callback
 from .secrets import COMMAND_CHANNEL_ID, DISCORD_USER_ID, PRIVATE_GUILD
+
+
+class CWD:
+    """
+    Module class to manage the current working directory that the
+    bot is observing. It would be ideal to bind this to the bot, but it
+    does not seem that application commands have access to the bot
+    instance.
+    """
+    path = Path.home()
+    """Current working directory of local system that bot is observing."""
 
 
 class LocalBot(commands.Bot):
@@ -55,10 +66,11 @@ class LocalBot(commands.Bot):
 
 async def _load_bot_extensions(bot: LocalBot) -> None:
     """Load every command module as a bot extension."""
-    commands_dir = os.path.join(os.path.dirname(__file__), "commands")
+    commands_dir = Path(__file__).parent / "commands"
     success = 0
     total = 0
-    for filename in os.listdir(commands_dir):
+    for path in commands_dir.iterdir():
+        filename = path.name
         if filename.endswith(".py"):
             total += 1
             module_path = f".commands.{filename.removesuffix('.py')}"
